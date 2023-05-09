@@ -1,31 +1,23 @@
-CREATE TABLE auditoria (
-  id NUMBER GENERATED ALWAYS AS IDENTITY,
-  tabela VARCHAR2(50) NOT NULL,
-  comando VARCHAR2(10) NOT NULL,
-  data_hora DATE NOT NULL,
-  usuario VARCHAR2(50) NOT NULL
-);
+insert into estado(cod_estado, nom_estado, cod_pais) values ('SP', 'Sao Paulo', '11');
+insert into pais(cod_pais, nom_pais) values ('11', 'Brasil');
+insert into cidade(cod_cidade, nom_cidade, cod_estado) values ('55', 'Sao Paulo', 'SP');
+insert into cliente(COD_CLIENTE, nom_cliente, des_razao_social, tip_pessoa, num_cpf_cnpj, dat_cadastro, dat_cancelamento, sta_ativo) values ('01', 'FIAP', 'Faculdade Fiap', 'j', '51539211827', sysdate, null, 'a');
+insert into tipo_endereco(cod_tipo_endereco, des_tipo_endereco) values ('2', 'Teste');
 
-CREATE OR REPLACE TRIGGER tr_audit_endereco_cliente
-AFTER INSERT ON endereco_cliente
+CREATE or replace TRIGGER TRG_AUDITORIA_ENDERECO_CLIENTE
+AFTER INSERT ON ENDERECO_CLIENTE
 FOR EACH ROW
-DECLARE
-  v_comando VARCHAR2(10) := 'INSERT';
 BEGIN
-  INSERT INTO auditoria (
-    tabela,
-    comando,
-    data_hora,
-    usuario
-  ) VALUES (
-    'ENDERECO_CLIENTE',
-    v_comando,
-    SYSDATE,
-    USER
-  );
+    INSERT INTO AUDITORIA (DATA_HORA, USUARIO, COMANDO, TABELA)
+    VALUES ((select sysdate from dual), USER(), 'INSERT', 'ENDERECO_CLIENTE');
 END;
 
-
+CREATE TABLE AUDITORIA (
+    DATA_HORA DATE,
+    USUARIO VARCHAR(50),
+    COMANDO VARCHAR(10),
+    TABELA VARCHAR(50)
+);
 
 INSERT INTO ENDERECO_CLIENTE (
     SEQ_ENDERECO_CLIENTE,
@@ -39,39 +31,20 @@ INSERT INTO ENDERECO_CLIENTE (
     COD_CIDADE,
     STA_ATIVO,
     DAT_CADASTRO,
-    DT_CANCELAMENTO
+    DAT_CANCELAMENTO
 ) VALUES (
     1,
     2,
-    1001,
+    01,
     'Rua das Flores',
     123,
     'Apto 101',
-    '12345-678',
+    '12345678',
     'Jardim Primavera',
-    12345,
-    '1058',
+    '55',
+    'A',
     SYSDATE,
     NULL
 );
 
-
-INSERT INTO CLIENTE (
-    COD_CLIENTE,
-    NOM_CLIENTE,
-    DES_RAZAO_SOCIAL,
-    TIP_PESSOA,
-    NUM_CPF_CNPJ,
-    DAT_CADASTRO,
-    DAT_CANCELAMENTO,
-    STA_ATIVO
-) VALUES (
-    1001,
-    'João Silva',
-    NULL,
-    'F',
-    '12345678910',
-    SYSDATE,
-    NULL,
-    'S'
-);
+commit;
