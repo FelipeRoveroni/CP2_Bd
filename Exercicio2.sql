@@ -48,3 +48,4 @@ INSERT INTO ENDERECO_CLIENTE (
 );
 
 commit;
+
